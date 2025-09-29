@@ -29,7 +29,6 @@ logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(
 logger = logging.getLogger(__name__)
 
 # Configuration constants
-DEFAULT_SYSTEM_CONTENT = "You are a helpful and harmless assistant."
 DEFAULT_USER_CONTENT_PREFIX = (
     "Answer the given question. You must conduct reasoning inside <think> and </think> "
     "first every time you get new information. After reasoning, if you find you lack "
@@ -58,7 +57,7 @@ def process_single_row(row, current_split_name, row_index):
 
     # Build prompt structure
     user_content = user_content_prefix.rstrip("\n") + question
-    prompt = [{"role": "system", "content": system_content}, {"role": "user", "content": user_content}]
+    prompt = [{"role": "user", "content": user_content}]
 
     # Extract ground truth from reward_model or fallback to golden_answers
     reward_model_data = row.get("reward_model")
@@ -89,6 +88,7 @@ def process_single_row(row, current_split_name, row_index):
     return pd.Series(
         {
             "data_source": data_source_tagged,
+            "agent_name": "tool_agent",
             "prompt": prompt,
             "ability": row.get("ability"),
             "reward_model": reward_model_data,
@@ -172,7 +172,6 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     # System and user content configuration
-    system_content = DEFAULT_SYSTEM_CONTENT
     user_content_prefix = DEFAULT_USER_CONTENT_PREFIX
 
     main()
